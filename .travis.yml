@@ -1,0 +1,14 @@
+language: python
+python:
+  - "2.5"
+  - "2.6"
+  - "2.7"
+  - "3.2"
+# command to install dependencies
+install:
+  - pip install pep8 --use-mirrors
+# command to run tests
+script:
+  - pep8 mtb/ test/
+  - python setup.py test
+  - python setup.py install --no-data-files
