@@ -7,6 +7,7 @@ MANIFEST
 docs/_build
 
 #dev
+release-it.sh
 generate-deploy-doc.sh
 
 *.py[co]
