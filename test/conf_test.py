@@ -37,6 +37,18 @@ UNIFY_KEYS_SETS = (
 class ConfTest(unittest.TestCase):
     """ Test :py:mod:`mtb.conf` utilities module. """
 
+    def test_unicode_keywords_function(self):
+        """ Test unicode keywords function. """
+        error = None
+        unicode_dict = {u_('hello'): 'world'}
+        try:
+            some_function(**unicode_dict)
+        except Exception:
+            error = sys.exc_info()[1]
+        if type(error) is TypeError:
+            unify_keys(unicode_dict)
+            some_function(**unicode_dict)
+
     @parametrized(UNIFY_KEYS_SETS_NAMES, UNIFY_KEYS_SETS)
     def test_unify_keys(self, error, given, result):
         """ Test unify keys. """

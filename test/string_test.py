@@ -18,8 +18,7 @@ Copyright (C) 2013 CERN
 import sys
 import unittest
 
-from mtb.conf import unify_keys
-from mtb.string import u_
+from mtb.string import u_, get_uuid
 
 
 def some_function(**_):
@@ -30,17 +29,13 @@ def some_function(**_):
 class StringTest(unittest.TestCase):
     """ Test :py:mod:`mtb.string` utilities module. """
 
-    def test_unicode_keywords_function(self):
-        """ Test unicode keywords function. """
-        error = None
-        unicode_dict = {u_('hello'): 'world'}
-        try:
-            some_function(**unicode_dict)
-        except Exception:
-            error = sys.exc_info()[1]
-        if type(error) is TypeError:
-            unify_keys(unicode_dict)
-            some_function(**unicode_dict)
+    def test_u_(self):
+        """ Test get_uuid function. """
+        u_("hello world!")
+
+    def test_get_uuid(self):
+        """ Test get_uuid function. """
+        self.assert_(type(get_uuid()) == str)
 
 
 if __name__ == "__main__":
