@@ -7,9 +7,10 @@ Copyright (C) 2013 CERN
 import datetime
 import os
 import signal
-from mtb.log import log_warning
 import sys
 import time
+
+from mtb.log import log_warning
 
 
 #### PID helpers

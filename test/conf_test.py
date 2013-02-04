@@ -18,7 +18,7 @@ Copyright (C) 2013 CERN
 import sys
 import unittest
 
-from mtb.conf import unify_keys
+from mtb.conf import unify_keys, TreeDict
 from mtb.string import u_
 from mtb.test import parametrized
 
@@ -39,7 +39,7 @@ class ConfTest(unittest.TestCase):
 
     @parametrized(UNIFY_KEYS_SETS_NAMES, UNIFY_KEYS_SETS)
     def test_unify_keys(self, error, given, result):
-        """ Test unify kes. """
+        """ Test unify keys. """
         print("running unify keys for %s" % (given, ))
         got = None
         result_got = None
@@ -57,6 +57,36 @@ class ConfTest(unittest.TestCase):
                 "%s was expected to fail with error: %s" %
                 (given, error, ))
         print("...test unify keys ok")
+
+    def test_treedict(self):
+        """ Test TreeDict. """
+        print("running TreeDict tests")
+        example = TreeDict()
+        example["foo"] = "bar"
+        example["foo4-bar"] = "value4"
+        example["foo5-bar-next"] = "value6"
+        example.setdefault("foo2", "bar2")
+        example.setdefault("foo3-bar", "value3")
+        example.setdefault("foo3-bar", "value5")
+        self.assertEquals("bar", example["foo"])
+        self.assertEquals("value4", example["foo4-bar"])
+        self.assertEquals("value4", example["foo4"]["bar"])
+        self.assertEquals("value6", example["foo5-bar-next"])
+        self.assertEquals("value6", example["foo5"]["bar"]["next"])
+        self.assertEquals("value6", example["foo5-bar"]["next"])
+        self.assertEquals("bar2", example["foo2"])
+        self.assertEquals("value3", example["foo3-bar"])
+        self.assertEquals("bar", example.get("foo"))
+        self.assertEquals("value4", example.get("foo4-bar"))
+        self.assertEquals("value4", example.get("foo4").get("bar"))
+        self.assertEquals("value6", example.get("foo5-bar-next"))
+        self.assertEquals("value6", example.get("foo5").get("bar").get("next"))
+        self.assertEquals("value6", example.get("foo5-bar").get("next"))
+        self.assertEquals("bar2", example.get("foo2"))
+        self.assertEquals("value3", example.get("foo3-bar"))
+        self.assertEquals(None, example.get("foo-notebar"))
+        self.assertRaises(KeyError, lambda: example["foo-notebar"])
+        print("...test TreeDict ok")
 
 
 if __name__ == "__main__":

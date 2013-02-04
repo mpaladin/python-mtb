@@ -14,7 +14,6 @@
 
  Copyright (C) 2013 CERN
 """
-
 import test.all_tests
 import unittest
 
