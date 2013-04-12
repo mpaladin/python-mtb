@@ -15,7 +15,6 @@ limitations under the License.
 
 Copyright (C) 2013 CERN
 """
-import sys
 import unittest
 
 from mtb.string import u_, get_uuid

@@ -14,41 +14,18 @@ limitations under the License.
 
 Copyright (C) 2013 CERN
 """
-
+import logging
 import os
 import shutil
-import sys
 import unittest
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
 
 import mtb.log as log
 from mtb.test import parametrized
 
 
-OK = True
-FAIL = False
-
 LOG_OPERATIONS = "debug info warning error critical".split()
 
 TEST_DIR = os.path.abspath("test_tmp")
-
-
-def capture(func, *args, **kwargs):
-    """ Capture stdout. """
-    # setup the environment
-    b_out = sys.stdout
-    b_err = sys.stderr
-    sys.stdout = StringIO()
-    sys.stderr = sys.stdout
-    func(*args, **kwargs)
-    out = sys.stdout.getvalue()
-    sys.stdout.close()
-    sys.stdout = b_out
-    sys.stderr = b_err
-    return out
 
 
 class LogTest(unittest.TestCase):
@@ -68,24 +45,38 @@ class LogTest(unittest.TestCase):
         """ Restore the test environment and delete the test folder. """
         shutil.rmtree(TEST_DIR, True)
 
-    @parametrized("log_n log_s".split(), log.LOG_SYSTEM.items())
+    @parametrized("log_n log_s".split(), log.LOG_SYSTEMS.items())
     def test_init(self, log_n, log_s):
         """ Test log system creation. """
-        print("running log system creation for %s"
-              % (log_n,))
-        log_s("foo")
-        log.get_log(log_n)
-        print("...test log system creation ok")
+        print("running log setup for %s" % (log_n,))
+        extra = dict()
+        if log_n == "file":
+            extra = {
+                "handler_options": {
+                    "filename": os.path.join(TEST_DIR, "file.log"),
+                }
+            }
+        log.setup_log("foo", log_n, extra=extra)
+        print("...test log setup ok")
 
-    @parametrized("log_n log_s".split(), log.LOG_SYSTEM.items())
+    @parametrized("log_n log_s".split(), log.LOG_SYSTEMS.items())
     def test_log_operations(self, log_n, log_s):
         """ Test log system operations. """
-        print("running log operations checking for %s"
-              % (log_n,))
-        log_system = log_s("foo")
+        print("running log operations checking for %s" % (log_n,))
+        extra = dict()
+        if log_n == "file":
+            extra = {
+                "handler_options": {
+                    "filename": os.path.join(TEST_DIR, "file.log"),
+                }
+            }
+        log.setup_log("foo", log_n, extra=extra)
+        logger = logging.getLogger("foo")
         for operation in LOG_OPERATIONS:
-            capture(getattr(log_system, operation), "foo")
+            getattr(logger, operation)(
+                "log test for %s.%s" % (log_n, operation))
         print("...test log operations checking ok")
+
 
 if __name__ == "__main__":
     unittest.main()
